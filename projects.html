@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Collection — 53 Hands-On AI Projects</title>
+<meta name="description" content="53 real-world, build-it-yourself AI engineering projects across ML, Deep Learning, NLP, Generative AI and AI Agents — each with documented code, a shared chat UI and tests.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1117; --bg2:#161b27; --surface:#242d3e; --surface2:#2d3748;
+    --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+    --text:#e8edf5; --muted:#8b97ab; --faint:#5a6478;
+    --blue:#38bdf8; --purple:#a78bfa; --green:#34d399;
+    --shadow:0 8px 32px rgba(0,0,0,0.4); --radius:14px; --radius-sm:8px; --radius-xs:6px;
+    --grad2:linear-gradient(135deg,#0ea5e9 0%,#7c3aed 100%);
+    --font:'Inter',ui-sans-serif,system-ui,-apple-system,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:inherit;text-decoration:none;}
+  ::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:var(--bg);} ::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:99px;}
+
+  .navbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:rgba(15,17,23,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+  .nav-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;color:var(--text);}
+  .nav-links{display:flex;gap:4px;align-items:center;}
+  .nav-links a{padding:6px 12px;border-radius:var(--radius-xs);font-size:13px;font-weight:500;color:var(--muted);transition:color .2s,background .2s;}
+  .nav-links a:hover{color:var(--text);background:var(--surface);}
+  .nav-cta{background:var(--grad2);color:#fff !important;border-radius:var(--radius-xs) !important;padding:7px 16px !important;font-weight:600 !important;}
+
+  .hero{max-width:1200px;margin:0 auto;padding:120px 24px 24px;text-align:center;}
+  .eyebrow{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);margin-bottom:12px;}
+  .hero h1{font-size:clamp(30px,5vw,52px);font-weight:900;letter-spacing:-.02em;line-height:1.1;margin-bottom:16px;}
+  .hero h1 .grad{background:var(--grad2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .hero p{font-size:17px;color:var(--muted);max-width:680px;margin:0 auto 10px;line-height:1.7;}
+  .hero .meta{font-size:13px;color:var(--faint);}
+
+  .filters{position:sticky;top:60px;z-index:50;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:1200px;margin:0 auto;padding:16px 24px;background:rgba(15,17,23,0.9);backdrop-filter:blur(12px);}
+  .filt{font:inherit;font-size:13px;font-weight:600;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:99px;padding:7px 15px;cursor:pointer;transition:all .2s;}
+  .filt:hover{color:var(--text);border-color:var(--border2);}
+  .filt.active{background:var(--grad2);color:#fff;border-color:transparent;}
+
+  main{max-width:1200px;margin:0 auto;padding:24px 24px 80px;}
+  .track-block{margin-bottom:48px;}
+  .track-head{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+  .track-head::before{content:'';position:absolute;}
+  .track-ic{width:46px;height:46px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:22px;background:color-mix(in srgb,var(--tc) 18%,transparent);border:1px solid color-mix(in srgb,var(--tc) 35%,transparent);}
+  .track-head h2{font-size:21px;font-weight:800;letter-spacing:-.01em;}
+  .track-count{font-size:12px;font-weight:600;color:var(--faint);margin-left:6px;}
+  .track-head p{font-size:13px;color:var(--muted);margin-top:2px;}
+
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;}
+  .pcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;transition:all .22s;}
+  .pcard:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:var(--shadow);}
+  .pcard-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .pnum{width:34px;height:34px;border-radius:50%;background:var(--grad2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;}
+  .plvl{font-size:14px;}
+  .pcard h3{font-size:15.5px;font-weight:700;margin-bottom:7px;}
+  .pcard p{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px;flex-grow:1;}
+  .ptags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+  .ptag{font-size:11px;font-weight:600;padding:2px 9px;border-radius:99px;background:rgba(167,139,250,0.1);color:var(--purple);border:1px solid rgba(167,139,250,0.2);}
+  .pcode{font-size:12.5px;font-weight:600;color:var(--blue);}
+  .pcard:hover .pcode{text-decoration:underline;}
+  .hidden{display:none !important;}
+
+  footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;color:var(--faint);font-size:13px;}
+  footer a{color:var(--blue);}
+
+  .hamburger{display:none;}
+  @media(max-width:760px){
+    .nav-links{display:none;}
+    .hero{padding-top:96px;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a class="nav-brand" href="index.html">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <rect width="28" height="28" rx="7" fill="#161b27"/>
+      <circle cx="14" cy="11" r="5" stroke="#38bdf8" stroke-width="1.5"/>
+      <path d="M10 19h8M14 16v5" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="7" cy="8" r="1.5" fill="#a78bfa"/>
+      <circle cx="21" cy="8" r="1.5" fill="#34d399"/>
+    </svg>
+    AI Engineer 2026
+  </a>
+  <div class="nav-links">
+    <a href="index.html#roadmap">Roadmap</a>
+    <a href="index.html#study-plan">Study Plan</a>
+    <a href="projects.html">Projects</a>
+    <a href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection" target="_blank" rel="noopener" class="nav-cta">View on GitHub →</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="eyebrow">Hands-On Project Collection</div>
+  <h1><span class="grad">53</span> Real-World AI Projects</h1>
+  <p>A build-it-yourself companion course across ML, Deep Learning, NLP, Generative AI and AI Agents. Every project ships documented Python, a shared chat UI, automated tests and a professional README — a portfolio you can show and adapt for production.</p>
+  <p class="meta">For coders &amp; non-coders · 🟢 Beginner · 🟡 Intermediate · 🔴 Advanced · click any card to read the code &amp; docs</p>
+</header>
+
+<div class="filters" id="filters">
+  <button class="filt active" data-f="all">All · 53</button><button class="filt" data-f="ml">Machine Learning</button><button class="filt" data-f="deep-learning">Deep Learning</button><button class="filt" data-f="nlp">NLP</button><button class="filt" data-f="genai">Generative AI</button><button class="filt" data-f="agents">AI Agents</button>
+</div>
+
+<main>
+    <section class="track-block" data-track="ml" id="ml">
+      <div class="track-head" style="--tc:#3b82f6">
+        <span class="track-ic">📊</span>
+        <div><h2>Machine Learning <span class="track-count">10 projects</span></h2><p>Classic algorithms, training &amp; tuning</p></div>
+      </div>
+      <div class="pgrid">
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/ml/01-customer-churn" target="_blank" rel="noopener" data-track="ml">
+          <div class="pcard-top"><span class="pnum">01</span><span class="plvl">🟢</span></div>
+          <h3>Customer Churn</h3>
+          <p>Flags telco subscribers likely to cancel; compares LogReg / RF / XGBoost + a stacking ensemble, reports ROC-AUC and the top churn drivers.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span><span class="ptag">XGBoost</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/ml/02-house-prices" target="_blank" rel="noopener" data-track="ml">
+          <div class="pcard-top"><span class="pnum">02</span><span class="plvl">🟢</span></div>
+          <h3>House Prices</h3>
+          <p>Price regression comparing Ridge / RF / Gradient Boosting + stacking; reports R²/MAE/RMSE and the features that drive price.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/ml/03-fraud-detection" target="_blank" rel="noopener" data-track="ml">
+          <div class="pcard-top"><span class="pnum">03</span><span class="plvl">🟡</span></div>
+          <h3>Fraud Detection</h3>
+          <p>Imbalanced credit-card fraud with SMOTE oversampling + multi-algorithm stacking, tuned for recall.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span><span class="ptag">imbalanced-learn</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/ml/04-credit-risk" target="_blank" rel="noopener" data-track="ml">
+          <div class="pcard-top"><span class="pnum">04</span><span class="plvl">🟡</span></div>
+          <h3>Credit Risk</h3>
+          <p>Loan-default classifier (LogReg / RF / GBM + stacking) with feature-importance explanations.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/ml/05-breast-cancer" target="_blank" rel="noopener" data-track="ml">
+          <div class="pcard-top"><span class="pnum">05</span><span class="plvl">🟢</span></div>
+          <h3>Breast-Cancer Diagnosis</h3>
+          <p>Explainable diagnosis on UCI Wisconsin; multi-algorithm + stacking with clinician-checkable importances.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/ml/06-customer-segmentation" target="_blank" rel="noopener" data-track="ml">
+          <div class="pcard-top"><span class="pnum">06</span><span class="plvl">🟡</span></div>
+          <h3>Customer Segmentation</h3>
+          <p>RFM features from raw transactions; KMeans vs Agglomerative vs DBSCAN scored by silhouette, labelled segments.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/ml/07-demand-forecasting" target="_blank" rel="noopener" data-track="ml">
+          <div class="pcard-top"><span class="pnum">07</span><span class="plvl">🟡</span></div>
+          <h3>Demand Forecasting</h3>
+          <p>Forecasting as supervised regression on lag + calendar features vs a seasonal-naive baseline; MAE/RMSE/MAPE.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/ml/08-stock-movement" target="_blank" rel="noopener" data-track="ml">
+          <div class="pcard-top"><span class="pnum">08</span><span class="plvl">🔴</span></div>
+          <h3>Stock Movement</h3>
+          <p>Technical features → chronological split (no look-ahead leakage) → honest backtest of long/flat vs buy-and-hold.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span><span class="ptag">yfinance</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/ml/09-recommender" target="_blank" rel="noopener" data-track="ml">
+          <div class="pcard-top"><span class="pnum">09</span><span class="plvl">🟡</span></div>
+          <h3>Movie Recommender</h3>
+          <p>SVD matrix factorization vs mean baselines on MovieLens, held-out RMSE + top-k recommendations.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/ml/10-automl-optuna" target="_blank" rel="noopener" data-track="ml">
+          <div class="pcard-top"><span class="pnum">10</span><span class="plvl">🔴</span></div>
+          <h3>AutoML + Optuna</h3>
+          <p>Capstone — an Optuna study tuning a gradient-boosting model with a default-vs-tuned comparison and optimization-history chart.</p>
+          <div class="ptags"><span class="ptag">Optuna</span><span class="ptag">scikit-learn</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+      </div>
+    </section>
+    <section class="track-block" data-track="deep-learning" id="deep-learning">
+      <div class="track-head" style="--tc:#ec4899">
+        <span class="track-ic">🧠</span>
+        <div><h2>Deep Learning <span class="track-count">10 projects</span></h2><p>PyTorch — training, transfer learning, fine-tuning</p></div>
+      </div>
+      <div class="pgrid">
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/deep-learning/01-cnn-from-scratch" target="_blank" rel="noopener" data-track="deep-learning">
+          <div class="pcard-top"><span class="pnum">01</span><span class="plvl">🟢</span></div>
+          <h3>CNN from Scratch</h3>
+          <p>A SimpleCNN + training loop on Fashion-MNIST that classifies example images.</p>
+          <div class="ptags"><span class="ptag">PyTorch</span><span class="ptag">torchvision</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/deep-learning/02-transfer-learning" target="_blank" rel="noopener" data-track="deep-learning">
+          <div class="pcard-top"><span class="pnum">02</span><span class="plvl">🟡</span></div>
+          <h3>Transfer Learning</h3>
+          <p>Swaps ResNet-18&#x27;s head, freezes the backbone, fine-tunes on any ImageFolder dataset.</p>
+          <div class="ptags"><span class="ptag">PyTorch</span><span class="ptag">torchvision</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/deep-learning/03-pneumonia-xray" target="_blank" rel="noopener" data-track="deep-learning">
+          <div class="pcard-top"><span class="pnum">03</span><span class="plvl">🔴</span></div>
+          <h3>Pneumonia X-ray</h3>
+          <p>Fine-tuned ResNet-18 (normal vs pneumonia) + a from-scratch Grad-CAM overlay for explainability.</p>
+          <div class="ptags"><span class="ptag">PyTorch</span><span class="ptag">Grad-CAM</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/deep-learning/04-object-detection" target="_blank" rel="noopener" data-track="deep-learning">
+          <div class="pcard-top"><span class="pnum">04</span><span class="plvl">🟡</span></div>
+          <h3>Object Detection</h3>
+          <p>A YOLO11 detector — upload an image, get an annotated image + a table of detections.</p>
+          <div class="ptags"><span class="ptag">Ultralytics YOLO11</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/deep-learning/05-unet-segmentation" target="_blank" rel="noopener" data-track="deep-learning">
+          <div class="pcard-top"><span class="pnum">05</span><span class="plvl">🔴</span></div>
+          <h3>U-Net Segmentation</h3>
+          <p>A compact U-Net with skip connections, pixel-wise training loop, input-vs-mask visualisation.</p>
+          <div class="ptags"><span class="ptag">PyTorch</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/deep-learning/06-traffic-signs" target="_blank" rel="noopener" data-track="deep-learning">
+          <div class="pcard-top"><span class="pnum">06</span><span class="plvl">🟡</span></div>
+          <h3>Traffic Signs</h3>
+          <p>A colour-image CNN over GTSRB 32×32 crops, trained and evaluated in the chat UI.</p>
+          <div class="ptags"><span class="ptag">PyTorch</span><span class="ptag">torchvision</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/deep-learning/07-lstm-forecasting" target="_blank" rel="noopener" data-track="deep-learning">
+          <div class="pcard-top"><span class="pnum">07</span><span class="plvl">🟡</span></div>
+          <h3>LSTM Forecasting</h3>
+          <p>An LSTM that predicts the next value from a window, then forecasts multiple steps recursively.</p>
+          <div class="ptags"><span class="ptag">PyTorch</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/deep-learning/08-speech-emotion" target="_blank" rel="noopener" data-track="deep-learning">
+          <div class="pcard-top"><span class="pnum">08</span><span class="plvl">🟡</span></div>
+          <h3>Speech Emotion</h3>
+          <p>Audio → MFCC features → MLP classifier (librosa, with a numpy spectral fallback so it runs offline).</p>
+          <div class="ptags"><span class="ptag">PyTorch</span><span class="ptag">librosa</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/deep-learning/09-face-verification" target="_blank" rel="noopener" data-track="deep-learning">
+          <div class="pcard-top"><span class="pnum">09</span><span class="plvl">🔴</span></div>
+          <h3>Face Verification</h3>
+          <p>A CNN that maps a face to an L2-normalised embedding, then verifies pairs by cosine similarity.</p>
+          <div class="ptags"><span class="ptag">PyTorch</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/deep-learning/10-vit-finetune" target="_blank" rel="noopener" data-track="deep-learning">
+          <div class="pcard-top"><span class="pnum">10</span><span class="plvl">🔴</span></div>
+          <h3>ViT Fine-Tune</h3>
+          <p>Capstone — a Vision Transformer with a swapped head + fine-tune loop + optional Weights &amp; Biases sweeps.</p>
+          <div class="ptags"><span class="ptag">PyTorch</span><span class="ptag">W&amp;B</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+      </div>
+    </section>
+    <section class="track-block" data-track="nlp" id="nlp">
+      <div class="track-head" style="--tc:#10b981">
+        <span class="track-ic">💬</span>
+        <div><h2>NLP <span class="track-count">10 projects</span></h2><p>Classic NLP → transformers → LLM fine-tuning</p></div>
+      </div>
+      <div class="pgrid">
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/nlp/01-sms-spam" target="_blank" rel="noopener" data-track="nlp">
+          <div class="pcard-top"><span class="pnum">01</span><span class="plvl">🟢</span></div>
+          <h3>SMS Spam</h3>
+          <p>TF-IDF comparing Naive Bayes / LogReg / Linear SVM; paste a message, get spam/ham + confidence.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/nlp/02-sentiment" target="_blank" rel="noopener" data-track="nlp">
+          <div class="pcard-top"><span class="pnum">02</span><span class="plvl">🟢</span></div>
+          <h3>Sentiment</h3>
+          <p>TF-IDF classifier comparison that scores any review; documents the DistilBERT fine-tune path for SOTA.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span><span class="ptag">DistilBERT</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/nlp/03-fake-news" target="_blank" rel="noopener" data-track="nlp">
+          <div class="pcard-top"><span class="pnum">03</span><span class="plvl">🟡</span></div>
+          <h3>Fake News</h3>
+          <p>TF-IDF NB / LogReg / SVM classifier that scores any headline.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/nlp/04-ner" target="_blank" rel="noopener" data-track="nlp">
+          <div class="pcard-top"><span class="pnum">04</span><span class="plvl">🟡</span></div>
+          <h3>Named Entity Recognition</h3>
+          <p>A rule-based extractor in the chat UI; documents the fine-tuned BERT / spaCy production path.</p>
+          <div class="ptags"><span class="ptag">spaCy</span><span class="ptag">HF Transformers</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/nlp/05-summarization" target="_blank" rel="noopener" data-track="nlp">
+          <div class="pcard-top"><span class="pnum">05</span><span class="plvl">🟡</span></div>
+          <h3>Summarization</h3>
+          <p>A faithful extractive summarizer (frequency-scored sentences) + the documented BART abstractive path.</p>
+          <div class="ptags"><span class="ptag">HF Transformers</span><span class="ptag">BART</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/nlp/06-topic-modeling" target="_blank" rel="noopener" data-track="nlp">
+          <div class="pcard-top"><span class="pnum">06</span><span class="plvl">🟡</span></div>
+          <h3>Topic Modeling</h3>
+          <p>Compares NMF (on TF-IDF) and LDA (on counts), shows top words per topic, matches new docs to a topic.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/nlp/07-translation" target="_blank" rel="noopener" data-track="nlp">
+          <div class="pcard-top"><span class="pnum">07</span><span class="plvl">🟡</span></div>
+          <h3>Machine Translation</h3>
+          <p>A chat translator — offline word-lookup demo + the real NLLB-200 path via Transformers.</p>
+          <div class="ptags"><span class="ptag">HF Transformers</span><span class="ptag">NLLB-200</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/nlp/08-question-answering" target="_blank" rel="noopener" data-track="nlp">
+          <div class="pcard-top"><span class="pnum">08</span><span class="plvl">🟡</span></div>
+          <h3>Question Answering</h3>
+          <p>A TF-IDF sentence-relevance baseline over your context + the SQuAD BERT span-extraction path.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span><span class="ptag">BERT</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/nlp/09-llm-finetune-lora" target="_blank" rel="noopener" data-track="nlp">
+          <div class="pcard-top"><span class="pnum">09</span><span class="plvl">🔴</span></div>
+          <h3>LLM Fine-Tune (LoRA/QLoRA)</h3>
+          <p>16 GB GPU — Alpaca-format instruction-data prep + a complete Unsloth QLoRA training script.</p>
+          <div class="ptags"><span class="ptag">Unsloth</span><span class="ptag">QLoRA</span><span class="ptag">HF</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/nlp/10-semantic-search" target="_blank" rel="noopener" data-track="nlp">
+          <div class="pcard-top"><span class="pnum">10</span><span class="plvl">🟡</span></div>
+          <h3>Semantic Search</h3>
+          <p>A TF-IDF résumé ↔ job matcher + the sentence-transformer dense-embedding upgrade.</p>
+          <div class="ptags"><span class="ptag">scikit-learn</span><span class="ptag">sentence-transformers</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+      </div>
+    </section>
+    <section class="track-block" data-track="genai" id="genai">
+      <div class="track-head" style="--tc:#8b5cf6">
+        <span class="track-ic">✨</span>
+        <div><h2>Generative AI <span class="track-count">10 projects</span></h2><p>LLM apps, RAG, image/video, local inference, guardrails</p></div>
+      </div>
+      <div class="pgrid">
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/genai/01-prompt-playground" target="_blank" rel="noopener" data-track="genai">
+          <div class="pcard-top"><span class="pnum">01</span><span class="plvl">🟢</span></div>
+          <h3>Prompt Playground</h3>
+          <p>Multi-provider chat (OpenAI / Anthropic / Ollama / offline mock) that shows which model answered + a chain-of-thought transform.</p>
+          <div class="ptags"><span class="ptag">LLM client</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/genai/02-rag" target="_blank" rel="noopener" data-track="genai">
+          <div class="pcard-top"><span class="pnum">02</span><span class="plvl">🟡</span></div>
+          <h3>RAG — Chat with Docs</h3>
+          <p>Chunk → retrieve → answer with citations over your text or PDFs.</p>
+          <div class="ptags"><span class="ptag">embeddings</span><span class="ptag">pypdf</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/genai/03-graphrag" target="_blank" rel="noopener" data-track="genai">
+          <div class="pcard-top"><span class="pnum">03</span><span class="plvl">🔴</span></div>
+          <h3>GraphRAG</h3>
+          <p>Entity extraction → a networkx co-occurrence graph → neighbourhood retrieval → grounded answer.</p>
+          <div class="ptags"><span class="ptag">networkx</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/genai/04-local-llm-chat" target="_blank" rel="noopener" data-track="genai">
+          <div class="pcard-top"><span class="pnum">04</span><span class="plvl">🟡</span></div>
+          <h3>Local LLM Chat</h3>
+          <p>Chats against a local model via Ollama or a vLLM OpenAI-compatible server, with history.</p>
+          <div class="ptags"><span class="ptag">Ollama</span><span class="ptag">vLLM</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/genai/05-bitnet-1bit" target="_blank" rel="noopener" data-track="genai">
+          <div class="pcard-top"><span class="pnum">05</span><span class="plvl">🔴</span></div>
+          <h3>1-bit LLMs (BitNet)</h3>
+          <p>From-scratch ternary (absmean) quantization — converts weights to {−1,0,1}, reports compression + error.</p>
+          <div class="ptags"><span class="ptag">numpy</span><span class="ptag">BitNet</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/genai/06-image-generation" target="_blank" rel="noopener" data-track="genai">
+          <div class="pcard-top"><span class="pnum">06</span><span class="plvl">🟡</span></div>
+          <h3>Image Generation</h3>
+          <p>Text-to-image — a procedural offline demo + the real diffusers path (SD 3.5 / FLUX).</p>
+          <div class="ptags"><span class="ptag">diffusers</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/genai/07-video-generation" target="_blank" rel="noopener" data-track="genai">
+          <div class="pcard-top"><span class="pnum">07</span><span class="plvl">🔴</span></div>
+          <h3>Video Generation</h3>
+          <p>Text-to-video — a procedural GIF offline demo + the diffusers LTX-Video / hosted-API path.</p>
+          <div class="ptags"><span class="ptag">diffusers</span><span class="ptag">LTX-Video</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/genai/08-document-intelligence" target="_blank" rel="noopener" data-track="genai">
+          <div class="pcard-top"><span class="pnum">08</span><span class="plvl">🟡</span></div>
+          <h3>Document Intelligence / OCR</h3>
+          <p>scan/PDF → OCR → field extraction; extraction tested offline, modern OCR engines documented.</p>
+          <div class="ptags"><span class="ptag">Docling</span><span class="ptag">Qwen2.5-VL</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/genai/09-structured-extraction" target="_blank" rel="noopener" data-track="genai">
+          <div class="pcard-top"><span class="pnum">09</span><span class="plvl">🟡</span></div>
+          <h3>Structured Extraction</h3>
+          <p>A Pydantic schema validated on the way in — regex offline, PydanticAI (LLM fills the schema) in production.</p>
+          <div class="ptags"><span class="ptag">Pydantic</span><span class="ptag">PydanticAI</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/genai/10-evals-guardrails" target="_blank" rel="noopener" data-track="genai">
+          <div class="pcard-top"><span class="pnum">10</span><span class="plvl">🔴</span></div>
+          <h3>Evals + Guardrails</h3>
+          <p>LLMOps capstone — quality metrics (exact-match, faithfulness recall) + guardrails (PII, banned-content) into a report.</p>
+          <div class="ptags"><span class="ptag">Ragas</span><span class="ptag">DeepEval</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+      </div>
+    </section>
+    <section class="track-block" data-track="agents" id="agents">
+      <div class="track-head" style="--tc:#f59e0b">
+        <span class="track-ic">🤖</span>
+        <div><h2>AI Agents <span class="track-count">13 projects</span></h2><p>Frameworks &amp; real agent types</p></div>
+      </div>
+      <div class="pgrid">
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/01-react-from-scratch" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">01</span><span class="plvl">🟢</span></div>
+          <h3>ReAct from Scratch</h3>
+          <p>A ReAct executor with a safe calculator + lookup tool and a transparent Thought/Action/Observation trace.</p>
+          <div class="ptags"><span class="ptag">pure Python</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/02-sql-agent" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">02</span><span class="plvl">🟡</span></div>
+          <h3>SQL Agent</h3>
+          <p>Natural language → SQL over a real SQLite DB; LangGraph + a schema-aware LLM in production.</p>
+          <div class="ptags"><span class="ptag">SQLite</span><span class="ptag">LangGraph</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/03-web-agent" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">03</span><span class="plvl">🟡</span></div>
+          <h3>Web / Browser Agent</h3>
+          <p>Navigates a site and extracts answers with a visible trace; browser-use / Playwright on a live browser in production.</p>
+          <div class="ptags"><span class="ptag">browser-use</span><span class="ptag">Playwright</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/04-research-agent" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">04</span><span class="plvl">🟡</span></div>
+          <h3>Research Agent</h3>
+          <p>Searches a corpus, ranks sources, writes a cited synthesis; CrewAI + a web-search tool in production.</p>
+          <div class="ptags"><span class="ptag">CrewAI</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/05-multiagent-content" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">05</span><span class="plvl">🟡</span></div>
+          <h3>Multi-Agent Content Team</h3>
+          <p>A researcher → writer → editor pipeline that turns a topic into an article, showing each role&#x27;s output.</p>
+          <div class="ptags"><span class="ptag">CrewAI</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/06-autogen-conversation" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">06</span><span class="plvl">🟡</span></div>
+          <h3>Conversational Multi-Agent</h3>
+          <p>A Solver ↔ Critic dialogue that refines an answer over rounds, with the full transcript.</p>
+          <div class="ptags"><span class="ptag">AutoGen</span><span class="ptag">AG2</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/07-pydanticai-tools" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">07</span><span class="plvl">🟡</span></div>
+          <h3>Type-safe Tool Agent</h3>
+          <p>Tools with Pydantic arg models + validators and a router that validates before executing.</p>
+          <div class="ptags"><span class="ptag">PydanticAI</span><span class="ptag">Pydantic</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/08-a2a-protocol" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">08</span><span class="plvl">🔴</span></div>
+          <h3>A2A — Across Frameworks</h3>
+          <p>An A2A message schema + agent cards; two cross-framework agents collaborate on one task.</p>
+          <div class="ptags"><span class="ptag">A2A protocol</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/09-healthcare-agent" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">09</span><span class="plvl">🔴</span></div>
+          <h3>Healthcare Agent</h3>
+          <p>Guideline-RAG wrapped in safety rails: emergency escalation, refusal to diagnose/prescribe, disclaimer on every answer.</p>
+          <div class="ptags"><span class="ptag">RAG</span><span class="ptag">guardrails</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/10-finance-agent" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">10</span><span class="plvl">🟡</span></div>
+          <h3>Finance Agent</h3>
+          <p>A finance analyst over a financials table (SQLite) with a no-advice guardrail; RAG over 10-Ks in production.</p>
+          <div class="ptags"><span class="ptag">SQLite</span><span class="ptag">RAG</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/11-voice-agent" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">11</span><span class="plvl">🔴</span></div>
+          <h3>Voice Agent</h3>
+          <p>An STT → LLM → TTS pipeline; the text orchestration is tested offline, the audio edges are documented.</p>
+          <div class="ptags"><span class="ptag">Whisper</span><span class="ptag">TTS</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/12-guardrails-safety" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">12</span><span class="plvl">🟡</span></div>
+          <h3>Guardrails / Safety</h3>
+          <p>An input rail (jailbreak / disallowed-request blocking) + an output rail (PII masking) wrapping a model.</p>
+          <div class="ptags"><span class="ptag">NeMo Guardrails</span><span class="ptag">Guardrails AI</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+        <a class="pcard" href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026/tree/main/Project-Collection/agents/13-agent-harness" target="_blank" rel="noopener" data-track="agents">
+          <div class="pcard-top"><span class="pnum">13</span><span class="plvl">🔴</span></div>
+          <h3>Agent Harness</h3>
+          <p>Capstone — routes a task to the right skill, retries, returns a full trace + metrics; Claude Agent SDK / LangGraph + a tracer in production.</p>
+          <div class="ptags"><span class="ptag">Claude Agent SDK</span><span class="ptag">Langfuse</span></div>
+          <span class="pcode">View code &amp; docs →</span>
+        </a>
+      </div>
+    </section>
+</main>
+
+<footer>
+  <p>Part of <a href="index.html">How to Become an AI Engineer in 2026</a> · <a href="https://github.com/thepradip/How-to-become-an-AI-Engineer-in-2026" target="_blank" rel="noopener">View on GitHub</a></p>
+</footer>
+
+<script>
+  const blocks = document.querySelectorAll('.track-block');
+  document.getElementById('filters').addEventListener('click', e => {
+    const btn = e.target.closest('.filt'); if(!btn) return;
+    document.querySelectorAll('.filt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.f;
+    blocks.forEach(b => b.classList.toggle('hidden', f !== 'all' && b.dataset.track !== f));
+  });
+</script>
+</body>
+</html>
